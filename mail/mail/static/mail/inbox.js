@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
-  document.querySelector('#compose').addEventListener('click', compose_email);
+  document.querySelector('#compose').addEventListener('click', compose_email());
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -18,10 +18,11 @@ function compose_email() {
 
   document.querySelector("#status").innerHTML = '';
   // Clear out composition fields
+
   document.querySelector('#compose-recipients').value = '';
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
-
+  
   document.querySelector('#compose-form').onsubmit = () => {
     fetch('/emails', {
       method: 'POST',
@@ -139,6 +140,16 @@ function show_mail(id, mailbox)
       document.querySelector("#emails-view").appendChild(butn);
       butn.addEventListener("click", () => {
         toggle_archive(email.id, email.archived);
+      });
+
+      let replyButton = document.createElement("button");
+      replyButton.className = "btn btn-primary";
+      replyButton.innerHTML = "Reply";
+      document.querySelector("#emails-view").appendChild(replyButton);
+      replyButton.addEventListener("click", function(){
+        compose_email();
+        document.querySelector('#compose-recipients').value = email.sender;
+        document.querySelector("#compose-subject").value = "Re: " + email.subject;
       });
     }
   });
